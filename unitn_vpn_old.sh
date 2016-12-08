@@ -138,59 +138,64 @@ if $debug; then
 
 fi
 
-exit 1
-
 function startup_vpn {
-    echo "Connecting ..."
-    cd "$BASEDIR"
+  echo "Connecting ..."
+  cd "$BASEDIR"
 
-    # the password
-    password=''
-    eval "$(gpg --decrypt password.gpg)"
+  # the password
+  password=''
+  eval "$(gpg --decrypt password.gpg)"
 
-    if $verbose; then
-      echo -n "./ncsvc "
-      echo -n "-P $port "
-      echo -n "-p *** "
-      echo -n "-h vpn-ssl.unitn.it "
-      echo -n "-u $user "
-      echo -n "-f certificato_vpn-ssl.crt "
-      echo    "-r AR-unitn-ldap-ad" 
-    fi
-    sudo $EXEC \
-                -P $port \
-                -p "$password" \
-                -h vpn-ssl.unitn.it \
-                -u $user \
-                -f certificato_vpn-ssl.crt \
-                -r AR-unitn-ldap-ad
-    sleep 0.5
-    pidof $EXEC > "$BASEDIR/pid"
+  if $verbose; then
+    echo -n "./ncsvc "
+    echo -n "-P $port "
+    echo -n "-p *** "
+    echo -n "-h vpn-ssl.unitn.it "
+    echo -n "-u $user "
+    echo -n "-f certificato_vpn-ssl.crt "
+    echo    "-r AR-unitn-ldap-ad"
+  fi
+  sudo $EXEC \
+          -P $port \
+          -p "$password" \
+          -h vpn-ssl.unitn.it \
+          -u $user \
+          -f certificato_vpn-ssl.crt \
+          -r AR-unitn-ldap-ad
+  sleep 0.5
+  pidof $EXEC > "$BASEDIR/pid"
 }
 
 function shutdown_vpn {
-    echo "Shutting down VPN"
-    cd "$BASEDIR"
-    sudo $EXEC -Kill
+  echo "Shutting down VPN"
+  cd "$BASEDIR"
+  sudo $EXEC -Kill
 
-    rm "$BASEDIR/pid"
+  rm -f "$BASEDIR/pid"
 }
 
 if $kill; then
-    shutdown_vpn
-    exit 0
+  shutdown_vpn
+  exit 0
 fi
 
 if [ ! -f "$BASEDIR/pid" ]; then
-    if [[ ! $user ]]; then
-        (>&2 echo '---')
-        (>&2 echo 'Error: option --user is required to start the VPN')
-        (>&2 echo 'Usage:')
-        (>&2 echo -e '\tunitn_vpn_old.sh [options] --user username@unitn.it')
-        exit 1
-    fi
-    echo "Connecting with user: $user"
-    startup_vpn $user
+
+  if [[ ! $user ]]; then
+    (>&2 echo '---')
+    (>&2 echo 'Error: option --user is required to start the VPN')
+    (>&2 echo 'Usage:')
+    (>&2 echo -e '\tunitn_vpn_old.sh [options] --user username@unitn.it')
+    exit 1
+  fi
+  echo "Connecting with user: $user"
+  startup_vpn $user
+
+else
+  (>&2 echo '---')
+  (>&2 echo "Error: pidfile in '$BASEDIR/pid', is the VPN already active?")
+  (>&2 echo 'If you need to stop it launch:')
+  (>&2 echo -e '\tunitn_vpn_old.sh --kill')
 fi
 
 exit 0
