@@ -59,6 +59,20 @@ plaintext password 'mypass' (the quotes prevent shell variable substitutions):
   echo password=\''mypass'\' | gpg -o password.gpg --cipher-algo AES256 --symmetric
 ```
 
+### KNOWN BUGS AND LIMITATIONS
+
+On kernels v. 4.5.5 and later (currently affecting Ubuntu 16.10 and Fedora 24,
+among others), a bug[[1]][[2]] causes the VPN to establish wrong routing rules.
+A workaround is available running the following command:
+```
+  echo 0 | sudo tee /proc/sys/net/ipv6/conf/default/router_solicitations
+```
+
+#### REFERENCES
+* [1]: https://bugzilla.redhat.com/show_bug.cgi?id=1343091#c17
+  [[1]]: https://bugzilla.redhat.com/show_bug.cgi?id=1343091#c17
+* [2]: https://askubuntu.com/questions/846053/
+  [[2]]: https://askubuntu.com/questions/846053/
 
 # LICENSE
 
