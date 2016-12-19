@@ -236,6 +236,12 @@ function shutdown_vpn {
   rm -f "$BASEDIR/pid"
 }
 
+# define cleanup function to be executed on exit
+function finish {
+  shutdown_vpn
+}
+trap finish EXIT
+
 if $kill; then
   shutdown_vpn
   exit 0
