@@ -120,13 +120,13 @@ $(bold CONNECTION\ MODES)
 
 With the option --mode, you can change how traffic is routed through the VPN.
 
-* **split tunnel** mode[3]: the VPN connection provides traffic directed to
-  intranet IPs using the VPN tunnel while traffic to other networks (e.g
-  Internet) is provided by the standard client connection.
+* **split tunnel** mode[3] (--mode=split): the VPN connection provides traffic
+  directed to intranet IPs using the VPN tunnel while traffic to other networks
+  (e.g Internet) is provided by the standard client connection.
   The IP assigned to the tun interface is in the range:
   10.31.0.10 - 10.31.0.254.
-* **out** mode[4]: all the traffic will flow in the SSL tunnel and the internet
-  traffic is natted with a UniTN public IP address.
+* **out** mode[4] (--mode=out): all the traffic will flow in the SSL tunnel and
+  the internet traffic is natted with a UniTN public IP address.
   The IP assigned to the tun interface is in the range:
   10.31.111.10 - 10.31.111.254.
 

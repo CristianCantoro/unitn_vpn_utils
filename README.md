@@ -63,15 +63,16 @@ plaintext password 'mypass' (the quotes prevent shell variable substitutions):
 
 With the option --mode, you can change how traffic is routed through the VPN.
 
-* **split tunnel** mode[3]: the VPN connection provides traffic directed to
-  intranet IPs using the VPN tunnel while traffic to other networks (e.g
-  Internet) is provided by the standard client connection.
+* **split tunnel** mode[3] (--mode=split): the VPN connection provides traffic
+  directed to intranet IPs using the VPN tunnel while traffic to other networks
+  (e.g Internet) is provided by the standard client connection.
   The IP assigned to the tun interface is in the range:
   10.31.0.10 - 10.31.0.254.
-* **out** mode[4]: all the traffic will flow in the SSL tunnel and the internet
-  traffic is natted with a UniTN public IP address.
+* **out** mode[4] (--mode=out): all the traffic will flow in the SSL tunnel and
+  the internet traffic is natted with a UniTN public IP address.
   The IP assigned to the tun interface is in the range:
   10.31.111.10 - 10.31.111.254.
+
 
 ### KNOWN BUGS AND LIMITATIONS
 
@@ -83,14 +84,15 @@ A workaround is available running the following command:
 ```
 
 #### REFERENCES
-* [1]: https://bugzilla.redhat.com/show_bug.cgi?id=1343091#c17
-  [[1]]: https://bugzilla.redhat.com/show_bug.cgi?id=1343091#c17
-* [2]: https://askubuntu.com/questions/846053/
-  [[2]]: https://askubuntu.com/questions/846053/
-* [3]: https://wiki.unitn.it/pub:conf-vpn-en
-  [[3]]: https://wiki.unitn.it/pub:conf-vpn-en
-* [4]: https://wiki.unitn.it/pub:conf-vpn-out-en
-  [[4]]: https://wiki.unitn.it/pub:conf-vpn-out-en
+[1]: https://bugzilla.redhat.com/show_bug.cgi?id=1343091#c17
+[2]: https://askubuntu.com/questions/846053/
+[3]: https://wiki.unitn.it/pub:conf-vpn-en
+[4]: https://wiki.unitn.it/pub:conf-vpn-out-en
+
+* [[1]]: https://bugzilla.redhat.com/show_bug.cgi?id=1343091#c17
+* [[2]]: https://askubuntu.com/questions/846053/
+* [[3]]: https://wiki.unitn.it/pub:conf-vpn-en
+* [[4]]: https://wiki.unitn.it/pub:conf-vpn-out-en
 
 # LICENSE
 
