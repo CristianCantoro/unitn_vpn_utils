@@ -9,6 +9,7 @@ man=false
 user=''
 debug=false
 verbose=false
+mode='split'
 port='4444'
 kill=false
 certificate_file=''
@@ -16,7 +17,7 @@ password_file=''
 
 read -d '' docstring <<EOF
 Usage:
-  unitn_vpn_old.sh [options] --user USER
+  unitn_vpn_old.sh [options] [ --mode split | --mode out ] --user USER
   unitn_vpn_old.sh [options] --kill
   unitn_vpn_old.sh ( -h | --help | --man )
   unitn_vpn_old.sh ( --version )
@@ -26,6 +27,12 @@ Usage:
                                   [default: $BASEDIR/certificato_vpn-ssl.crt]
     -d, --debug                   Enable debug mode (implies --verbose)
     -k, --kill                    Kill connection
+    --mode ( split | out )        Switch VPN mode: 'split' is the split-tunnel
+                                  mpde and routes only the traffic directed to
+                                  the resources within the VPN, 'out' routes
+                                  all traffic through the VPN.
+                                  Existing connection do not get rerouted.
+                                  [default: split]
     --port PORT                   Port number [default: 4444]
     --password-file PWD_FILE      Password file
                                   [default: $BASEDIR/password.gpg]
@@ -109,6 +116,20 @@ plaintext password 'mypass' (the quotes prevent shell variable substitutions):
     gpg -o password.gpg --cipher-algo AES256 --symmetric
 ---
 
+$(bold CONNECTION\ MODES)
+
+With the option --mode, you can change how traffic is routed through the VPN.
+
+* **split tunnel** mode[3]: the VPN connection provides traffic directed to
+  intranet IPs using the VPN tunnel while traffic to other networks (e.g
+  Internet) is provided by the standard client connection.
+  The IP assigned to the tun interface is in the range:
+  10.31.0.10 - 10.31.0.254.
+* **out** mode[4]: all the traffic will flow in the SSL tunnel and the internet
+  traffic is natted with a UniTN public IP address.
+  The IP assigned to the tun interface is in the range:
+  10.31.111.10 - 10.31.111.254.
+
 $(bold KNOWN\ BUGS\ AND\ LIMITATIONS)
 
 On kernels v. 4.5.5 and later (currently affecting Ubuntu 16.10 and Fedora 24,
@@ -122,12 +143,13 @@ REFERENCES
 
 [1]: https://bugzilla.redhat.com/show_bug.cgi?id=1343091#c17
 [2]: https://askubuntu.com/questions/846053/
+[3]: https://wiki.unitn.it/pub:conf-vpn-en
+[4]: https://wiki.unitn.it/pub:conf-vpn-out-en
 
 MANPAGE
 )"
 
 }
-
 
 if $man; then
   print_man
@@ -146,33 +168,59 @@ if $debug; then
   echodebug "---"
   echodebug "user: $user"
   echodebug "port: $port"
+  echodebug "mode: $mode"
   echodebug "kill: $kill"
   echodebug "password file: $password_file"
   echodebug "certificate file: $certificate_file"
 
 fi
 
+if [[ "$mode" != 'split' && "$mode" != 'out' ]]; then
+  (>&2 echo '---')
+  (>&2 echo "Error: option --mode required either 'split' or 'out' as arguments")
+  (>&2 echo 'Usage:')
+  (>&2 echo -e '\tunitn_vpn_old.sh [options] [--mode split | --mode out] --user USER')
+  exit 1
+fi
+
 function startup_vpn {
+  local host_net='vpn-ssl.unitn.it'
+  local ive_mode_url
+
   echo "Connecting ..."
   cd "$BASEDIR"
 
   # the password
-  password=''
+  local password=''
   eval "$(gpg --decrypt password.gpg)"
+
+  ive_mode_url='https://vpn-ssl.unitn.it'
+  if [[ "$mode" == 'split' ]]; then
+    # mode is 'split'
+    echodebug 'VPN is in split-tunnel mode'
+  else
+    # mode is 'out'
+    echodebug 'VPN is in out mode'
+
+    ive_mode_url='vpn-ssl.unitn.it/vpn-out'
+  fi
 
   if $verbose; then
     echo -n "./ncsvc "
     echo -n "-P $port "
     echo -n "-p *** "
-    echo -n "-h vpn-ssl.unitn.it "
+    echo -n "-h $host_net "
+    echo -n "-U $ive_mode_url "
     echo -n "-u $user "
     echo -n "-f certificato_vpn-ssl.crt "
     echo    "-r AR-unitn-ldap-ad"
   fi
+
   sudo $EXEC \
           -P $port \
           -p "$password" \
-          -h vpn-ssl.unitn.it \
+          -h "$host_net" \
+          -U "$ive_mode_url" \
           -u $user \
           -f certificato_vpn-ssl.crt \
           -r AR-unitn-ldap-ad
