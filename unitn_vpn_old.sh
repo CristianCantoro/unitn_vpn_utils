@@ -15,7 +15,7 @@ kill=false
 certificate_file=''
 password_file=''
 
-read -d '' docstring <<EOF
+read -rd '' docstring <<EOF
 Usage:
   unitn_vpn_old.sh [options] [ --mode split | --mode out ] --user USER
   unitn_vpn_old.sh [options] --kill
