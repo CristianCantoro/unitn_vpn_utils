@@ -192,7 +192,7 @@ function startup_vpn {
 
   # the password
   local password=''
-  eval "$(gpg --decrypt password.gpg)"
+  eval "$(gpg --decrypt password.gpg || echo 'false')"
 
   ive_mode_url='https://vpn-ssl.unitn.it'
   if [[ "$mode" == 'split' ]]; then
