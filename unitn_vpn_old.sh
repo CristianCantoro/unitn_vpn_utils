@@ -243,7 +243,8 @@ function finish {
 trap finish EXIT
 
 if $kill; then
-  shutdown_vpn
+  # it is not necessary to call shutdown_vpn because it will be called by
+  # the exit trap
   exit 0
 fi
 
@@ -264,6 +265,7 @@ else
   (>&2 echo "Error: pidfile in '$BASEDIR/pid', is the VPN already active?")
   (>&2 echo 'If you need to stop it launch:')
   (>&2 echo -e '\tunitn_vpn_old.sh --kill')
+  (>&2 echo 'however, the VPN should be shut down now.')
 fi
 
 exit 0
