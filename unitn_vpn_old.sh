@@ -113,7 +113,7 @@ You can create the encrypted password file with the following command, with
 plaintext password 'mypass' (the quotes prevent shell variable substitutions):
 ---
   echo password=\''mypass'\' | \ 
-    gpg -o password.gpg --cipher-algo AES256 --symmetric
+    /usr/bin/gpg2 -o password.gpg --cipher-algo AES256 --symmetric
 ---
 
 $(bold CONNECTION\ MODES)
@@ -192,7 +192,7 @@ function startup_vpn {
 
   # the password
   local password=''
-  eval "$(gpg --decrypt password.gpg || echo 'false')"
+  eval "$(/usr/bin/gpg2 --decrypt password.gpg || echo 'false')"
 
   ive_mode_url='https://vpn-ssl.unitn.it'
   if [[ "$mode" == 'split' ]]; then
