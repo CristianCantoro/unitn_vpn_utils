@@ -28,7 +28,7 @@ Usage:
     -d, --debug                   Enable debug mode (implies --verbose)
     -k, --kill                    Kill connection
     --mode ( split | out )        Switch VPN mode: 'split' is the split-tunnel
-                                  mpde and routes only the traffic directed to
+                                  mode and routes only the traffic directed to
                                   the resources within the VPN, 'out' routes
                                   all traffic through the VPN.
                                   Existing connection do not get rerouted.
