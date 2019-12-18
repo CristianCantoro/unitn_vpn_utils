@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2128
+SOURCED=false && [ "$0" = "$BASH_SOURCE" ] || SOURCED=true
 
 #################### Globals
 BASEDIR="$HOME/.nc/network_connect"
@@ -54,10 +56,11 @@ eval "$(echo "$docstring" | docopts -V - -h - : "$@" )"
 
 # bash strict mode
 # See:
-# http://redsymbol.net/articles/unofficial-bash-strict-mode/
-set -euo pipefail
-IFS=$'\n\t'
-
+#   https://balist.es/blog/2017/03/21/enhancing-the-unofficial-bash-strict-mode/
+if ! $SOURCED; then
+  set -euo pipefail
+  IFS=$'\n\t'
+fi
 
 #################### Utils
 echodebug() { echo -en "[$(date '+%F_%k:%M:%S')][debug]\t"; echo "$@" 1>&2; }
